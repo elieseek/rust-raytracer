@@ -1,4 +1,6 @@
-use na::{vector, Vector3};
+mod colour;
+
+use na::vector;
 use nalgebra as na;
 
 fn main() {
@@ -18,16 +20,8 @@ fn main() {
             0.25_f64
         ];
 
-        *pixel = vec_to_rgb(pixel_colour);
+        *pixel = colour::vec_to_rgb(pixel_colour);
     }
 
     img.save("image.png").unwrap();
-}
-
-fn vec_to_rgb(c: Vector3<f64>) -> image::Rgb<u8> {
-    let r = (255.999 * c[(0, 0)]) as u8;
-    let g = (255.999 * c[(1, 0)]) as u8;
-    let b = (255.999 * c[(2, 0)]) as u8;
-
-    image::Rgb([r, g, b])
 }

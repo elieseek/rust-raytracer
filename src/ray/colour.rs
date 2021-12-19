@@ -1,4 +1,3 @@
-use crate::ray::NamedField;
 use crate::utility::*;
 use na::Vector3;
 use nalgebra as na;

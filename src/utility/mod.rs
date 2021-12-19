@@ -1,4 +1,8 @@
-use nalgebra::{vector, Vector3, Unit};
+mod vec;
+
+pub use vec::*;
+
+use nalgebra::{vector, Unit, Vector3};
 use rand::{distributions::Uniform, prelude::ThreadRng, thread_rng, Rng};
 
 pub fn clamp<T: PartialOrd>(x: T, min: T, max: T) -> T {

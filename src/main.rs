@@ -1,9 +1,11 @@
 mod hittable;
+mod material;
 mod ray;
 mod scene;
 mod utility;
 
 use hittable::{HittableList, Sphere};
+use material::{Lambertian, Metal};
 use na::vector;
 use nalgebra as na;
 use rand::{thread_rng, Rng};
@@ -24,15 +26,40 @@ fn main() {
     let mut world: HittableList = HittableList {
         objects: Vec::new(),
     };
-    world.add(Rc::new(Sphere {
-        centre: vector![0.0, 0.0, -1.0],
-        radius: 0.5,
-    }));
+
+    let material_ground = Rc::new(Lambertian {
+        albedo: vector![0.8, 0.8, 0.0],
+    });
+    let material_centre = Rc::new(Lambertian {
+        albedo: vector![0.7, 0.3, 0.3],
+    });
+    let material_left = Rc::new(Metal {
+        albedo: vector![0.8, 0.8, 0.8],
+    });
+    let material_right = Rc::new(Metal {
+        albedo: vector![0.8, 0.6, 0.2],
+    });
+
     world.add(Rc::new(Sphere {
         centre: vector![0.0, -100.5, -1.0],
         radius: 100.0,
+        material: material_ground,
     }));
-
+    world.add(Rc::new(Sphere {
+        centre: vector![0.0, -0.0, -1.0],
+        radius: 0.5,
+        material: material_centre,
+    }));
+    world.add(Rc::new(Sphere {
+        centre: vector![-1.0, 0.0, -1.0],
+        radius: 0.5,
+        material: material_left,
+    }));
+    world.add(Rc::new(Sphere {
+        centre: vector![1.0, 0.0, -1.0],
+        radius: 0.5,
+        material: material_right,
+    }));
     // camera
     let viewport_height = 2.0;
     let focal_length = 1.0;

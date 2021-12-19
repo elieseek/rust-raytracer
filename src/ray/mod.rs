@@ -1,13 +1,11 @@
 mod colour;
-mod vec;
 
 pub use colour::*;
-pub use vec::NamedField;
 
 use crate::hittable::Hittable;
-use crate::utility::Random;
+use crate::utility::*;
 use nalgebra::{vector, Unit, Vector3};
-use std::ops::{Add, Mul};
+use std::ops::Mul;
 
 pub struct Ray {
     pub origin: Vector3<f64>,
@@ -29,23 +27,16 @@ impl Ray {
 }
 
 pub fn ray_colour(ray: &Ray, world: &dyn Hittable, depth: i64) -> Vector3<f64> {
-    let mut rng = Random::new();
     if depth <= 0 {
         return vector![0.0, 0.0, 0.0];
     }
     match world.hit(ray, 0.001, f64::INFINITY) {
         Some(hit) => {
-            let target = rng.random_unit_vec().add(hit.normal.add(hit.point));
-
-            ray_colour(
-                &Ray {
-                    origin: hit.point,
-                    direction: Unit::new_normalize(target - hit.point),
-                },
-                world,
-                depth - 1,
-            )
-            .mul(0.5)
+            if let Some(scatter) = hit.material.scatter(ray, &hit) {
+                ray_colour(&scatter.ray, world, depth - 1).component_mul(&scatter.attenuation)
+            } else {
+                vector![0.0, 0.0, 0.0]
+            }
         }
         None => {
             let t = 0.5 * (ray.direction().y() + 1.0);

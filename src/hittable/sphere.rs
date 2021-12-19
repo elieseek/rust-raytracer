@@ -1,12 +1,14 @@
+use crate::hittable::{HitRecord, Hittable};
+use crate::material::Material;
+use crate::ray::Ray;
 use nalgebra::{Unit, Vector3};
 use std::ops::Mul;
-
-use crate::hittable::{HitRecord, Hittable};
-use crate::ray::Ray;
+use std::rc::Rc;
 
 pub struct Sphere {
     pub centre: Vector3<f64>,
     pub radius: f64,
+    pub material: Rc<dyn Material>,
 }
 
 impl Hittable for Sphere {
@@ -24,6 +26,7 @@ impl Hittable for Sphere {
                 return Some(HitRecord::from_ray(
                     ray,
                     ray.at(root),
+                    Rc::clone(&self.material),
                     root,
                     &Unit::new_normalize((ray.at(root) - self.centre).mul(1.0 / self.radius)),
                 ));
@@ -33,6 +36,7 @@ impl Hittable for Sphere {
                 return Some(HitRecord::from_ray(
                     ray,
                     ray.at(root),
+                    Rc::clone(&self.material),
                     root,
                     &Unit::new_normalize((ray.at(root) - self.centre).mul(1.0 / self.radius)),
                 ));

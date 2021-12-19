@@ -2,32 +2,32 @@ use std::ops::Mul;
 
 use nalgebra::{Unit, Vector3};
 
-pub trait NamedField {
-    fn x(&self) -> f64;
-    fn y(&self) -> f64;
-    fn z(&self) -> f64;
+pub trait NamedField<T> {
+    fn x(&self) -> T;
+    fn y(&self) -> T;
+    fn z(&self) -> T;
 }
 
-impl NamedField for Vector3<f64> {
-    fn x(&self) -> f64 {
+impl<T> NamedField<T> for Vector3<T> {
+    fn x(&self) -> T {
         self[(0, 0)]
     }
-    fn y(&self) -> f64 {
+    fn y(&self) -> T {
         self[(1, 0)]
     }
-    fn z(&self) -> f64 {
+    fn z(&self) -> T {
         self[(2, 0)]
     }
 }
 
-impl NamedField for Unit<Vector3<f64>> {
-    fn x(&self) -> f64 {
+impl<T> NamedField<T> for Unit<Vector3<T>> {
+    fn x(&self) -> T {
         self[(0, 0)]
     }
-    fn y(&self) -> f64 {
+    fn y(&self) -> T {
         self[(1, 0)]
     }
-    fn z(&self) -> f64 {
+    fn z(&self) -> T {
         self[(2, 0)]
     }
 }

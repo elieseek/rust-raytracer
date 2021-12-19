@@ -32,9 +32,11 @@ fn main() {
     });
     let material_left = MaterialKind::Metallic(Metal {
         albedo: vector![0.8, 0.8, 0.8],
+        fuzz: 0.3,
     });
     let material_right = MaterialKind::Metallic(Metal {
         albedo: vector![0.8, 0.6, 0.2],
+        fuzz: 1.0,
     });
 
     let materials = vec![

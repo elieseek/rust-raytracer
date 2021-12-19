@@ -10,9 +10,9 @@ pub fn vec_to_rgb(c: Vector3<f64>, samples: i64) -> image::Rgb<u8> {
 
     let scale = 1.0 / samples as f64;
 
-    let ir = (256.0 * clamp(r * scale, 0.0, 0.999)) as u8;
-    let ig = (256.0 * clamp(g * scale, 0.0, 0.999)) as u8;
-    let ib = (256.0 * clamp(b * scale, 0.0, 0.999)) as u8;
+    let ir = (256.0 * clamp((r * scale).sqrt(), 0.0, 0.999)) as u8;
+    let ig = (256.0 * clamp((g * scale).sqrt(), 0.0, 0.999)) as u8;
+    let ib = (256.0 * clamp((b * scale).sqrt(), 0.0, 0.999)) as u8;
 
     image::Rgb([ir, ig, ib])
 }

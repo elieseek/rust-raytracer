@@ -5,6 +5,7 @@ pub use colour::*;
 pub use vec::NamedField;
 
 use crate::hittable::Hittable;
+use crate::utility::Random;
 use nalgebra::{vector, Unit, Vector3};
 use std::ops::{Add, Mul};
 
@@ -27,9 +28,25 @@ impl Ray {
     }
 }
 
-pub fn ray_colour(ray: &Ray, world: &dyn Hittable) -> Vector3<f64> {
-    match world.hit(ray, 0.0, f64::INFINITY) {
-        Some(hit) => hit.normal.add(vector![1.0, 1.0, 1.0]).mul(0.5),
+pub fn ray_colour(ray: &Ray, world: &dyn Hittable, depth: i64) -> Vector3<f64> {
+    let mut rng = Random::new();
+    if depth <= 0 {
+        return vector![0.0, 0.0, 0.0];
+    }
+    match world.hit(ray, 0.001, f64::INFINITY) {
+        Some(hit) => {
+            let target = rng.random_unit_vec().add(hit.normal.add(hit.point));
+
+            ray_colour(
+                &Ray {
+                    origin: hit.point,
+                    direction: Unit::new_normalize(target - hit.point),
+                },
+                world,
+                depth - 1,
+            )
+            .mul(0.5)
+        }
         None => {
             let t = 0.5 * (ray.direction().y() + 1.0);
             (1.0 - t) * vector![1.0, 1.0, 1.0] + t * vector![0.5, 0.7, 1.0]

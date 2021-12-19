@@ -81,7 +81,7 @@ fn main() {
         print!("\rProgress: {:.2}%", 100.0 * (s as f64 / (samples as f64-1.0)));
     }
     println!(
-        "\nTotal time: {}s\nAverage: {}ms",
+        "\nTotal time: {}s\nAverage time per sample: {}ms",
         runtime.as_secs(),
         (runtime / (samples as u32)).as_millis()
     );

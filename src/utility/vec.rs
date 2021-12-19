@@ -2,13 +2,13 @@ use std::ops::Mul;
 
 use nalgebra::{Unit, Vector3};
 
-pub trait NamedField<T> {
+pub trait NamedField<T: Copy> {
     fn x(&self) -> T;
     fn y(&self) -> T;
     fn z(&self) -> T;
 }
 
-impl<T> NamedField<T> for Vector3<T> {
+impl<T: Copy> NamedField<T> for Vector3<T> {
     fn x(&self) -> T {
         self[(0, 0)]
     }
@@ -20,7 +20,7 @@ impl<T> NamedField<T> for Vector3<T> {
     }
 }
 
-impl<T> NamedField<T> for Unit<Vector3<T>> {
+impl<T: Copy> NamedField<T> for Unit<Vector3<T>> {
     fn x(&self) -> T {
         self[(0, 0)]
     }

@@ -11,11 +11,11 @@ use nalgebra::Vector3;
 
 #[enum_dispatch]
 pub trait Material {
-    fn scatter(&self, ray_in: &Ray, hit: &HitRecord) -> Option<ScatterRecord>;
+    fn scatter(&self, ray_in: &Ray, hit: &HitRecord) -> ScatterRecord;
 }
 
 pub struct ScatterRecord {
-    pub ray: Ray,
+    pub ray: Option<Ray>,
     pub attenuation: Vector3<f64>,
 }
 

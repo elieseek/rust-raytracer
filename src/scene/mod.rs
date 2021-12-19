@@ -24,8 +24,9 @@ impl Scene<'_> {
         }
         match self.world.hit(ray, 0.001, f64::INFINITY) {
             Some(hit) => {
-                if let Some(scatter) = self.materials[hit.material_handle].scatter(ray, &hit) {
-                    self.ray_colour(&scatter.ray, depth - 1)
+                let scatter = self.materials[hit.material_handle].scatter(ray, &hit);
+                if let Some(r) = scatter.ray {
+                    self.ray_colour(&r, depth - 1)
                         .component_mul(&scatter.attenuation)
                 } else {
                     vector![0.0, 0.0, 0.0]

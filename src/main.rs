@@ -17,8 +17,8 @@ use scene::{Camera, Image, Scene};
 fn main() {
     // image
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 2560;
-    let samples = 1024;
+    let image_width = 400;
+    let samples = 100;
     let max_depth = 50;
 
     // world
@@ -78,7 +78,10 @@ fn main() {
     let mut runtime = Duration::new(0, 0);
     for s in 0..samples {
         runtime += renderer.render();
-        print!("\rProgress: {:.2}%", 100.0 * (s as f64 / (samples as f64-1.0)));
+        print!(
+            "\rProgress: {:.2}%",
+            100.0 * (s as f64 / (samples as f64 - 1.0))
+        );
     }
     println!(
         "\nTotal time: {}s\nAverage time per sample: {}ms",

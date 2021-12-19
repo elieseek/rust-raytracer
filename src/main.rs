@@ -5,6 +5,8 @@ mod renderer;
 mod scene;
 mod utility;
 
+use std::time::Duration;
+
 use hittable::{HittableList, Object, Sphere};
 use material::{Lambertian, MaterialKind, Metal};
 use na::vector;
@@ -15,8 +17,8 @@ use scene::{Camera, Image, Scene};
 fn main() {
     // image
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 400;
-    let samples = 100;
+    let image_width = 2560;
+    let samples = 1024;
     let max_depth = 50;
 
     // world
@@ -73,31 +75,15 @@ fn main() {
     let cam = Camera::new(aspect_ratio, viewport_height, focal_length);
     let img = Image::new(aspect_ratio, image_width, samples, max_depth);
     let mut renderer = Renderer::new(cam, scene, img);
-    for _ in 0..samples {
-        renderer.render();
+    let mut runtime = Duration::new(0, 0);
+    for s in 0..samples {
+        runtime += renderer.render();
+        print!("\rProgress: {:.2}%", 100.0 * (s as f64 / (samples as f64-1.0)));
     }
+    println!(
+        "\nTotal time: {}s\nAverage: {}ms",
+        runtime.as_secs(),
+        (runtime / (samples as u32)).as_millis()
+    );
     renderer.save_image("output/image.png");
-
-    // Debug fallback
-    // let mut img = image::ImageBuffer::new(image_width, image_height);
-    // let mut rng = thread_rng();
-    // for (x, y, pixel) in img.enumerate_pixels_mut() {
-    //     // print!(
-    //     //     "\rProgress: {:.2}%",
-    //     //     100_f64 * (y * image_width + x) as f64 / ((image_width * image_height) as f64)
-    //     // );
-
-    //     let mut pixel_colour = vector![0.0, 0.0, 0.0];
-    //     for _ in 0..samples {
-    //         let u: f64 = (x as f64 + rng.gen::<f64>()) / (image_width as f64 - 1.0);
-    //         let v: f64 = (y as f64 + rng.gen::<f64>()) / (image_height as f64 - 1.0);
-    //         let ray = cam.get_ray(u, v);
-    //         pixel_colour += ray_colour(&ray, &world, max_depth);
-    //     }
-    //     *pixel = ray::vec_to_rgb(pixel_colour, samples);
-    // }
-
-    // image::imageops::flip_vertical(&img)
-    //     .save("output/image.png")
-    //     .unwrap();
 }

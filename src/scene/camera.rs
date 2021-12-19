@@ -7,10 +7,10 @@ pub struct Camera {
     // viewport_height: f64,
     // viewport_width: f64,
     // focal_length: f64,
-    origin: Vector3<f64>,
-    horizontal: Vector3<f64>,
-    vertical: Vector3<f64>,
-    lower_left_corner: Vector3<f64>,
+    pub origin: Vector3<f64>,
+    pub horizontal: Vector3<f64>,
+    pub vertical: Vector3<f64>,
+    pub lower_left_corner: Vector3<f64>,
 }
 
 impl Camera {

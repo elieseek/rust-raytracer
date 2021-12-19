@@ -26,8 +26,8 @@ impl Ray {
     }
 }
 
-pub fn ray_colour(ray: &Ray, world: &dyn Hittable, depth: i64) -> Vector3<f64> {
-    if depth <= 0 {
+pub fn ray_colour(ray: &Ray, world: &dyn Hittable, depth: u64) -> Vector3<f64> {
+    if depth == 0 {
         return vector![0.0, 0.0, 0.0];
     }
     match world.hit(ray, 0.001, f64::INFINITY) {

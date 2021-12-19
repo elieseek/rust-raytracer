@@ -453,6 +453,7 @@ dependencies = [
  "image",
  "nalgebra",
  "rand",
+ "rayon",
 ]
 
 [[package]]

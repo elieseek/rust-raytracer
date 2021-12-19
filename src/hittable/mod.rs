@@ -1,18 +1,16 @@
 pub mod hittable_list;
 pub mod sphere;
 
-pub use hittable_list::HittableList;
-pub use sphere::Sphere;
-
-use crate::material::Material;
 use crate::ray::Ray;
+use enum_dispatch::enum_dispatch;
+pub use hittable_list::HittableList;
 use nalgebra::{Unit, Vector3};
-use std::rc::Rc;
+pub use sphere::Sphere;
 
 pub struct HitRecord {
     pub point: Vector3<f64>,
     pub normal: Unit<Vector3<f64>>,
-    pub material: Rc<dyn Material>,
+    pub material_handle: usize,
     pub t: f64,
     pub front_face: bool,
 }
@@ -21,7 +19,7 @@ impl HitRecord {
     pub fn from_ray(
         ray: &Ray,
         point: Vector3<f64>,
-        material: Rc<dyn Material>,
+        material_handle: usize,
         t: f64,
         outward_normal: &Unit<Vector3<f64>>,
     ) -> Self {
@@ -35,13 +33,20 @@ impl HitRecord {
         HitRecord {
             point,
             normal,
-            material,
+            material_handle,
             t,
             front_face,
         }
     }
 }
 
+#[enum_dispatch]
 pub trait Hittable {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
+}
+
+#[enum_dispatch(Hittable)]
+pub enum Object {
+    Sphere(Sphere),
+    List(HittableList),
 }

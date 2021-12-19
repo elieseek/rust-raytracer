@@ -5,13 +5,12 @@ mod renderer;
 mod scene;
 mod utility;
 
-use hittable::{HittableList, Sphere};
-use material::{Lambertian, Metal};
+use hittable::{HittableList, Object, Sphere};
+use material::{Lambertian, MaterialKind, Metal};
 use na::vector;
 use nalgebra as na;
 use renderer::Renderer;
-use scene::{Camera, Image};
-use std::rc::Rc;
+use scene::{Camera, Image, Scene};
 
 fn main() {
     // image
@@ -21,50 +20,59 @@ fn main() {
     let max_depth = 50;
 
     // world
-    let mut world: HittableList = HittableList {
-        objects: Vec::new(),
-    };
+    let mut world = HittableList::new();
 
-    let material_ground = Rc::new(Lambertian {
+    let material_ground = MaterialKind::Diffuse(Lambertian {
         albedo: vector![0.8, 0.8, 0.0],
     });
-    let material_centre = Rc::new(Lambertian {
+    let material_centre = MaterialKind::Diffuse(Lambertian {
         albedo: vector![0.7, 0.3, 0.3],
     });
-    let material_left = Rc::new(Metal {
+    let material_left = MaterialKind::Metallic(Metal {
         albedo: vector![0.8, 0.8, 0.8],
     });
-    let material_right = Rc::new(Metal {
+    let material_right = MaterialKind::Metallic(Metal {
         albedo: vector![0.8, 0.6, 0.2],
     });
 
-    world.add(Rc::new(Sphere {
+    let materials = vec![
+        material_ground,
+        material_centre,
+        material_left,
+        material_right,
+    ];
+
+    world.add(Object::Sphere(Sphere {
         centre: vector![0.0, -100.5, -1.0],
         radius: 100.0,
-        material: material_ground,
+        material_handle: 0,
     }));
-    world.add(Rc::new(Sphere {
+    world.add(Object::Sphere(Sphere {
         centre: vector![0.0, -0.0, -1.0],
         radius: 0.5,
-        material: material_centre,
+        material_handle: 1,
     }));
-    world.add(Rc::new(Sphere {
+    world.add(Object::Sphere(Sphere {
         centre: vector![-1.0, 0.0, -1.0],
         radius: 0.5,
-        material: material_left,
+        material_handle: 2,
     }));
-    world.add(Rc::new(Sphere {
+    world.add(Object::Sphere(Sphere {
         centre: vector![1.0, 0.0, -1.0],
         radius: 0.5,
-        material: material_right,
+        material_handle: 3,
     }));
     // camera
     let viewport_height = 2.0;
     let focal_length = 1.0;
 
+    let scene = Scene {
+        world: &Object::List(world),
+        materials: &materials,
+    };
     let cam = Camera::new(aspect_ratio, viewport_height, focal_length);
     let img = Image::new(aspect_ratio, image_width, samples, max_depth);
-    let mut renderer = Renderer::new(cam, world, img);
+    let mut renderer = Renderer::new(cam, scene, img);
     for _ in 0..samples {
         renderer.render();
     }

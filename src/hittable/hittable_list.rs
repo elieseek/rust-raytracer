@@ -1,14 +1,20 @@
-use std::rc::Rc;
-
 use crate::hittable::{HitRecord, Hittable};
 use crate::ray::Ray;
 
+use super::Object;
+
 pub struct HittableList {
-    pub objects: Vec<Rc<dyn Hittable>>,
+    pub objects: Vec<Object>,
 }
 
 impl HittableList {
-    pub fn add(&mut self, object: Rc<dyn Hittable>) {
+    pub fn new() -> Self {
+        Self {
+            objects: Vec::new(),
+        }
+    }
+
+    pub fn add(&mut self, object: Object) {
         self.objects.push(object);
     }
 }

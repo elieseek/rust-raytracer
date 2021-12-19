@@ -1,26 +1,26 @@
 use image::Rgb;
 use nalgebra::{vector, Vector3};
 use rand::Rng;
+use rayon::prelude::*;
 use std::{ops::Div, time::Duration};
 
 use crate::{
-    hittable::HittableList,
     ray,
-    scene::{Camera, Image},
+    scene::{Camera, Image, Scene},
     utility::{self, *},
 };
 
-pub struct Renderer {
+pub struct Renderer<'a> {
     accumulated_buffer: Vec<Vector3<u64>>,
     output_buffer: Vec<Vector3<u8>>,
     accumulated_samples: usize,
     camera: Camera,
-    world: HittableList,
     image: Image,
+    scene: Scene<'a>,
 }
 
-impl Renderer {
-    pub fn new(camera: Camera, world: HittableList, image: Image) -> Self {
+impl<'a> Renderer<'a> {
+    pub fn new(camera: Camera, scene: Scene<'a>, image: Image) -> Self {
         let accumulated_buffer = vec![vector![0, 0, 0]; (image.height * image.width) as usize];
         let output_buffer = vec![vector![0, 0, 0]; (image.height * image.width) as usize];
         let accumulated_samples = 0;
@@ -30,7 +30,7 @@ impl Renderer {
             output_buffer,
             accumulated_samples,
             camera,
-            world,
+            scene,
             image,
         }
     }
@@ -39,7 +39,7 @@ impl Renderer {
         let start = std::time::Instant::now();
         self.accumulated_samples += 1;
         self.accumulated_buffer
-            .iter_mut()
+            .par_iter_mut()
             .enumerate()
             .for_each(|(i, pixel)| {
                 let mut rng = rand::thread_rng();
@@ -50,7 +50,7 @@ impl Renderer {
                 let v = (y as f64 + rng.gen::<f64>()) / (self.image.height as f64 - 1.0);
 
                 let ray = self.camera.get_ray(u, v);
-                let pixel_colour = ray::ray_colour(&ray, &self.world, self.image.max_depth);
+                let pixel_colour = self.scene.ray_colour(&ray, self.image.max_depth);
                 *pixel += ray::vec_to_vec3(pixel_colour, 1)
             });
         start.elapsed()

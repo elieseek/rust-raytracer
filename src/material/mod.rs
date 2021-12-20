@@ -1,6 +1,8 @@
+mod dielectric;
 mod lambertian;
 mod metal;
 
+pub use dielectric::Dielectric;
 use enum_dispatch::enum_dispatch;
 pub use lambertian::Lambertian;
 pub use metal::Metal;
@@ -23,4 +25,5 @@ pub struct ScatterRecord {
 pub enum MaterialKind {
     Diffuse(Lambertian),
     Metallic(Metal),
+    Dielectric(Dielectric),
 }

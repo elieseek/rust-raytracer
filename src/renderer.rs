@@ -34,6 +34,13 @@ impl<'a> Renderer<'a> {
             image,
         }
     }
+    #[allow(dead_code)]
+    pub fn trace_ray(&self, x: u64, y: u64, max_depth: u64) {
+        let u = x as f64 / (self.image.width as f64 - 1.0);
+        let v = (self.image.height - y) as f64 / (self.image.height as f64 - 1.0);
+        let ray = self.camera.get_ray(u, v);
+        self.scene.trace_ray(&ray, max_depth);
+    }
 
     pub fn render(&mut self) -> Duration {
         let start = std::time::Instant::now();
@@ -58,8 +65,8 @@ impl<'a> Renderer<'a> {
 
     fn set_output_buffer(&mut self) {
         self.output_buffer
-            .iter_mut()
-            .zip(self.accumulated_buffer.iter())
+            .par_iter_mut()
+            .zip(self.accumulated_buffer.par_iter())
             .for_each(|(pixel, acc)| {
                 let mut scaled = acc.cast::<f64>().div(self.accumulated_samples as f64);
                 scaled.apply(|v| {

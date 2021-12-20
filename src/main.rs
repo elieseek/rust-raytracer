@@ -14,11 +14,13 @@ use nalgebra as na;
 use renderer::Renderer;
 use scene::{Camera, Image, Scene};
 
+use crate::material::Dielectric;
+
 fn main() {
     // image
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 400;
-    let samples = 100;
+    let samples = 512;
     let max_depth = 50;
 
     // world
@@ -28,15 +30,12 @@ fn main() {
         albedo: vector![0.8, 0.8, 0.0],
     });
     let material_centre = MaterialKind::Diffuse(Lambertian {
-        albedo: vector![0.7, 0.3, 0.3],
+        albedo: vector![0.1, 0.2, 0.5],
     });
-    let material_left = MaterialKind::Metallic(Metal {
-        albedo: vector![0.8, 0.8, 0.8],
-        fuzz: 0.3,
-    });
+    let material_left = MaterialKind::Dielectric(Dielectric { ri: 1.5 });
     let material_right = MaterialKind::Metallic(Metal {
         albedo: vector![0.8, 0.6, 0.2],
-        fuzz: 1.0,
+        fuzz: 0.0,
     });
 
     let materials = vec![

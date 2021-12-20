@@ -7,6 +7,7 @@ pub use hittable_list::HittableList;
 use nalgebra::{Unit, Vector3};
 pub use sphere::Sphere;
 
+#[derive(Debug)]
 pub struct HitRecord {
     pub point: Vector3<f64>,
     pub normal: Unit<Vector3<f64>>,
@@ -23,7 +24,7 @@ impl HitRecord {
         t: f64,
         outward_normal: &Unit<Vector3<f64>>,
     ) -> Self {
-        let front_face = outward_normal.dot(&ray.direction()) < 0.0;
+        let front_face = outward_normal.dot(&ray.direction()) < -1e-5;
         let normal = if front_face {
             *outward_normal
         } else {

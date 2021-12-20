@@ -38,4 +38,34 @@ impl Scene<'_> {
             }
         }
     }
+    #[allow(dead_code)]
+    pub fn trace_ray(&self, ray: &Ray, depth: u64) -> Vector3<f64> {
+        if depth == 0 {
+            println!("Ray hit max depth.");
+            return vector![0.0, 0.0, 0.0];
+        }
+        println!(
+            "Tracing Ray {} with o: {}, d: {}",
+            depth,
+            ray.origin(),
+            ray.direction().into_inner()
+        );
+        match self.world.hit(ray, 0.001, f64::INFINITY) {
+            Some(hit) => {
+                println!("Ray {} hit {:?}.", depth, hit);
+                let scatter = self.materials[hit.material_handle].scatter(ray, &hit);
+                if let Some(r) = scatter.ray {
+                    self.trace_ray(&r, depth - 1)
+                        .component_mul(&scatter.attenuation)
+                } else {
+                    vector![0.0, 0.0, 0.0]
+                }
+            }
+            None => {
+                println!("No hit.");
+                let t = 0.5 * (ray.direction().y() + 1.0);
+                (1.0 - t) * vector![1.0, 1.0, 1.0] + t * vector![0.5, 0.7, 1.0]
+            }
+        }
+    }
 }

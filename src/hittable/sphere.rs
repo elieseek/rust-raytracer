@@ -13,13 +13,13 @@ impl Hittable for Sphere {
     fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord> {
         let oc = ray.origin() - self.centre;
         let half_b = oc.dot(&ray.direction());
-        let c = oc.dot(&oc) - self.radius * self.radius;
+        let c = oc.norm_squared() - self.radius * self.radius;
         let discriminant = half_b * half_b - c;
 
         if discriminant > 0.0 {
             let sqrtd = discriminant.sqrt();
-            let mut root = -half_b - sqrtd;
 
+            let mut root = -half_b - sqrtd;
             if t_min < root && root < t_max {
                 return Some(HitRecord::from_ray(
                     ray,
@@ -30,7 +30,7 @@ impl Hittable for Sphere {
                 ));
             }
             root = -half_b + sqrtd;
-            if t_min < root && root < t_min {
+            if t_min < root && root < t_max {
                 return Some(HitRecord::from_ray(
                     ray,
                     ray.at(root),

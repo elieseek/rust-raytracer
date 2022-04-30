@@ -1,12 +1,8 @@
-use crate::ray::Ray;
-use nalgebra::{vector, Unit, Vector3};
+use crate::{ray::Ray, utility::degrees_to_radians};
+use nalgebra::{Unit, Vector3};
 use std::ops::Mul;
 
 pub struct Camera {
-    // aspect_ratio: f64,
-    // viewport_height: f64,
-    // viewport_width: f64,
-    // focal_length: f64,
     pub origin: Vector3<f64>,
     pub horizontal: Vector3<f64>,
     pub vertical: Vector3<f64>,
@@ -14,19 +10,27 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn new(aspect_ratio: f64, viewport_height: f64, focal_length: f64) -> Self {
+    pub fn new(
+        look_from: Vector3<f64>,
+        look_at: Vector3<f64>,
+        v_up: Vector3<f64>,
+        vfov: f64,
+        aspect_ratio: f64,
+    ) -> Self {
+        let theta = degrees_to_radians(vfov);
+        let h = (theta / 2.0).tan();
+        let viewport_height = 2.0 * h;
         let viewport_width = aspect_ratio * viewport_height;
-        let origin = vector![0.0, 0.0, 0.0];
-        let horizontal = vector![viewport_width, 0.0, 0.0];
-        let vertical = vector![0.0, viewport_height, 0.0];
-        let lower_left_corner =
-            origin - horizontal * 0.5 - vertical * 0.5 - vector![0.0, 0.0, focal_length];
 
+        let w = (look_from - look_at).normalize();
+        let u = v_up.cross(&w).normalize();
+        let v = w.cross(&u);
+
+        let origin = look_from;
+        let horizontal = viewport_width * u;
+        let vertical = viewport_height * v;
+        let lower_left_corner = origin - 0.5 * horizontal - 0.5 * vertical - w;
         Camera {
-            // aspect_ratio,
-            // viewport_height,
-            // viewport_width,
-            // focal_length,
             origin,
             horizontal,
             vertical,
@@ -38,7 +42,7 @@ impl Camera {
         Ray {
             origin: self.origin,
             direction: Unit::new_normalize(
-                self.lower_left_corner + self.horizontal.mul(u) + self.vertical.mul(v),
+                self.lower_left_corner + self.horizontal.mul(u) + self.vertical.mul(v) - self.origin,
             ),
         }
     }

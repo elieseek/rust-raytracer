@@ -19,8 +19,8 @@ use crate::material::Dielectric;
 fn main() {
     // image
     let aspect_ratio = 16.0 / 9.0;
-    let image_width = 400;
-    let samples = 512;
+    let image_width = 1920;
+    let samples = 4000;
     let max_depth = 50;
 
     // world
@@ -65,15 +65,18 @@ fn main() {
         radius: 0.5,
         material_handle: 3,
     }));
-    // camera
-    let viewport_height = 2.0;
-    let focal_length = 1.0;
 
     let scene = Scene {
         world: &Object::List(world),
         materials: &materials,
     };
-    let cam = Camera::new(aspect_ratio, viewport_height, focal_length);
+    let cam = Camera::new(
+        vector![-2.0, 2.0, 1.0],
+        vector![0.0, 0.0, -1.0],
+        vector![0.0, 1.0, 0.0],
+        20.0,
+        aspect_ratio,
+    );
     let img = Image::new(aspect_ratio, image_width, samples, max_depth);
     let mut renderer = Renderer::new(cam, scene, img);
     let mut runtime = Duration::new(0, 0);

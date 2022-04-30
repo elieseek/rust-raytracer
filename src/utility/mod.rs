@@ -1,5 +1,7 @@
 mod vec;
 
+use std::f64::consts::PI;
+
 pub use vec::*;
 
 use nalgebra::{vector, Unit, Vector3};
@@ -13,6 +15,10 @@ pub fn clamp<T: PartialOrd>(x: T, min: T, max: T) -> T {
         return max;
     };
     x
+}
+
+pub fn degrees_to_radians(d: f64) -> f64 {
+    d * PI / 180.0
 }
 
 pub struct Random {

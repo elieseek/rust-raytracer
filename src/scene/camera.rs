@@ -42,7 +42,8 @@ impl Camera {
         Ray {
             origin: self.origin,
             direction: Unit::new_normalize(
-                self.lower_left_corner + self.horizontal.mul(u) + self.vertical.mul(v) - self.origin,
+                self.lower_left_corner + self.horizontal.mul(u) + self.vertical.mul(v)
+                    - self.origin,
             ),
         }
     }

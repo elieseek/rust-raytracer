@@ -12,12 +12,12 @@ use crate::{
     utility::NamedField,
 };
 
-pub struct Scene<'a> {
-    pub world: &'a Object,
-    pub materials: &'a [MaterialKind],
+pub struct Scene {
+    pub world: Object,
+    pub materials: Vec<Box<MaterialKind>>,
 }
 
-impl Scene<'_> {
+impl Scene {
     pub fn ray_colour(&self, ray: &Ray, depth: u64) -> Vector3<f64> {
         if depth == 0 {
             return vector![0.0, 0.0, 0.0];

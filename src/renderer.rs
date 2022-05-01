@@ -10,17 +10,17 @@ use crate::{
     utility::{self, *},
 };
 
-pub struct Renderer<'a> {
+pub struct Renderer {
     accumulated_buffer: Vec<Vector3<u64>>,
     output_buffer: Vec<Vector3<u8>>,
     accumulated_samples: usize,
     camera: Camera,
     image: Image,
-    scene: Scene<'a>,
+    scene: Scene,
 }
 
-impl<'a> Renderer<'a> {
-    pub fn new(camera: Camera, scene: Scene<'a>, image: Image) -> Self {
+impl Renderer {
+    pub fn new(camera: Camera, scene: Scene, image: Image) -> Self {
         let accumulated_buffer = vec![vector![0, 0, 0]; (image.height * image.width) as usize];
         let output_buffer = vec![vector![0, 0, 0]; (image.height * image.width) as usize];
         let accumulated_samples = 0;

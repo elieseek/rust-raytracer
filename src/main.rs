@@ -39,10 +39,10 @@ fn main() {
     });
 
     let materials = vec![
-        Box::new(material_ground),
-        Box::new(material_centre),
-        Box::new(material_left),
-        Box::new(material_right),
+        material_ground,
+        material_centre,
+        material_left,
+        material_right,
     ];
 
     world.add(Object::Sphere(Sphere {
@@ -68,7 +68,7 @@ fn main() {
 
     let scene = Scene {
         world: Object::List(world),
-        materials: materials,
+        materials,
     };
     let cam = Camera::new(
         vector![-2.0, 2.0, 1.0],

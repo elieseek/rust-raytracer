@@ -14,7 +14,7 @@ use crate::{
 
 pub struct Scene {
     pub world: Object,
-    pub materials: Vec<Box<MaterialKind>>,
+    pub materials: Vec<MaterialKind>,
 }
 
 impl Scene {

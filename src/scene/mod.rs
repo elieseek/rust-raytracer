@@ -12,6 +12,7 @@ use crate::{
     utility::NamedField,
 };
 
+#[derive(Clone)]
 pub struct Scene {
     pub world: Object,
     pub materials: Vec<MaterialKind>,

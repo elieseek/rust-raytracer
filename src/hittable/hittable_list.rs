@@ -3,6 +3,7 @@ use crate::ray::Ray;
 
 use super::Object;
 
+#[derive(Clone)]
 pub struct HittableList {
     pub objects: Vec<Object>,
 }

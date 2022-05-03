@@ -10,6 +10,7 @@ use crate::{
     utility::{self, *},
 };
 
+#[derive(Clone)]
 pub struct Renderer {
     accumulated_buffer: Vec<Vector3<u64>>,
     output_buffer: Vec<Vector3<u8>>,
@@ -63,7 +64,7 @@ impl Renderer {
         start.elapsed()
     }
 
-    fn set_output_buffer(&mut self) {
+    pub fn set_output_buffer(&mut self) {
         self.output_buffer
             .par_iter_mut()
             .zip(self.accumulated_buffer.par_iter())
@@ -77,14 +78,18 @@ impl Renderer {
     }
 
     pub fn get_image_buffer(&mut self) -> Option<image::ImageBuffer<Rgb<u8>, Vec<u8>>> {
-        self.set_output_buffer();
+        let buffer = self.get_raw_image_buffer();
+        image::ImageBuffer::from_raw(self.image.width as u32, self.image.height as u32, buffer)
+    }
+
+    pub fn get_raw_image_buffer(&mut self) -> Vec<u8> {
         let mut buffer = Vec::new();
         self.output_buffer.iter().for_each(|v| {
             buffer.push(v.x());
             buffer.push(v.y());
             buffer.push(v.z());
         });
-        image::ImageBuffer::from_raw(self.image.width as u32, self.image.height as u32, buffer)
+        buffer
     }
 
     pub fn save_image(&mut self, path: &str) {

@@ -5,6 +5,7 @@ use crate::{
 };
 use nalgebra::{Unit, Vector3};
 
+#[derive(Clone)]
 pub struct Metal {
     pub albedo: Vector3<f64>,
     pub fuzz: f64,

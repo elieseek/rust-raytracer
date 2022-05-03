@@ -5,9 +5,10 @@ mod renderer;
 mod scene;
 mod utility;
 
-use std::time::Duration;
+use fltk::{app, enums, frame::Frame, prelude::*, window::Window};
 
 use hittable::{HittableList, Object, Sphere};
+use image::Rgb;
 use material::{Lambertian, MaterialKind, Metal};
 use na::vector;
 use nalgebra as na;
@@ -20,6 +21,7 @@ fn main() {
     // image
     let aspect_ratio = 16.0 / 9.0;
     let image_width = 1920;
+    let image_height = (image_width as f64 / aspect_ratio) as u64;
     let samples = 4000;
     let max_depth = 50;
 
@@ -79,18 +81,51 @@ fn main() {
     );
     let img = Image::new(aspect_ratio, image_width, samples, max_depth);
     let mut renderer = Renderer::new(cam, scene, img);
-    let mut runtime = Duration::new(0, 0);
-    for s in 0..samples {
-        runtime += renderer.render();
-        print!(
-            "\rProgress: {:.2}%",
-            100.0 * (s as f64 / (samples as f64 - 1.0))
-        );
+
+    let app = app::App::default();
+    let mut wind = Window::default()
+        .with_size(
+            image_width.try_into().unwrap(),
+            image_height.try_into().unwrap(),
+        )
+        .with_label("Raytracer");
+    let mut frame = Frame::default().size_of(&wind);
+    wind.make_resizable(true);
+    wind.end();
+    wind.show();
+
+    let (s, r) = app::channel::<Message>();
+
+    std::thread::spawn(move || {
+        for _sample in 0..samples {
+            renderer.render();
+            renderer.set_output_buffer();
+            let buffer = renderer.get_image_buffer();
+            s.send(Message::Rendered(buffer));
+        }
+    });
+
+    while app.wait() {
+        if let Some(Message::Rendered(Some(buffer))) = r.recv() {
+            let flipped_buffer = image::imageops::flip_vertical(&buffer);
+            let mut image = fltk::image::RgbImage::new(
+                &flipped_buffer,
+                image_width.try_into().unwrap(),
+                image_height.try_into().unwrap(),
+                enums::ColorDepth::Rgb8,
+            )
+            .unwrap();
+            frame.draw(move |f| {
+                image.scale(f.width(), f.height(), false, true);
+                image.draw(f.x(), f.y(), f.w(), f.height());
+            });
+            frame.redraw();
+            wind.redraw();
+        }
     }
-    println!(
-        "\nTotal time: {}s\nAverage time per sample: {}ms",
-        runtime.as_secs(),
-        (runtime / (samples as u32)).as_millis()
-    );
-    renderer.save_image("output/image.png");
+}
+
+#[derive(Debug, Clone)]
+pub enum Message {
+    Rendered(Option<image::ImageBuffer<Rgb<u8>, Vec<u8>>>),
 }

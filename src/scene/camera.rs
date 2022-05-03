@@ -2,6 +2,7 @@ use crate::{ray::Ray, utility::degrees_to_radians};
 use nalgebra::{Unit, Vector3};
 use std::ops::Mul;
 
+#[derive(Clone)]
 pub struct Camera {
     pub origin: Vector3<f64>,
     pub horizontal: Vector3<f64>,

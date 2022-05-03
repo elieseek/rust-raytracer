@@ -7,6 +7,7 @@ use crate::{
 use nalgebra::{vector, Unit};
 use rand::Rng;
 
+#[derive(Clone)]
 pub struct Dielectric {
     pub ri: f64,
 }

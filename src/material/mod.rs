@@ -21,7 +21,7 @@ pub struct ScatterRecord {
     pub attenuation: Vector3<f64>,
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 #[enum_dispatch(Material)]
 pub enum MaterialKind {
     Diffuse(Lambertian),

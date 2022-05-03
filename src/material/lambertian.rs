@@ -3,7 +3,7 @@ use nalgebra::{Unit, Vector3};
 use super::{Material, ScatterRecord};
 use crate::{hittable::HitRecord, ray::Ray, utility, utility::Random};
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Lambertian {
     pub albedo: Vector3<f64>,
 }

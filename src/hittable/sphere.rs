@@ -3,7 +3,7 @@ use crate::ray::Ray;
 use nalgebra::{Unit, Vector3};
 use std::ops::Mul;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Sphere {
     pub centre: Vector3<f64>,
     pub radius: f64,

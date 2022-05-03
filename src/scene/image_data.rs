@@ -1,4 +1,4 @@
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Image {
     pub aspect_ratio: f64,
     pub width: u64,

@@ -10,7 +10,7 @@ use crate::{
     utility::{self, *},
 };
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Renderer {
     accumulated_buffer: Vec<Vector3<u64>>,
     output_buffer: Vec<Vector3<u8>>,

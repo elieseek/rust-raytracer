@@ -5,7 +5,10 @@ mod renderer;
 mod scene;
 mod utility;
 
-use fltk::{app, button::Button, enums, frame::Frame, misc::Progress, prelude::*, window::Window};
+use fltk::{
+    app, button::Button, enums, frame::Frame, image::PngImage, misc::Progress, prelude::*,
+    window::Window,
+};
 use fltk_theme::{color_themes, ColorTheme, SchemeType, WidgetScheme};
 use hittable::{HittableList, Object, Sphere};
 use image::Rgb;
@@ -116,6 +119,7 @@ fn main() {
     progress_bar.set_maximum((samples - 1) as f64);
     progress_bar.set_value(0.0);
 
+    wind.set_icon(Some(PngImage::load("ico/ferris.png").unwrap()));
     wind.make_resizable(true);
     wind.end();
     wind.show();
@@ -151,7 +155,7 @@ fn main() {
                     image.scale(f.width(), f.height(), false, true);
                     image.draw(f.x(), f.y(), f.w(), f.height());
                 });
-                wind.redraw();
+                image_frame.redraw();
             }
 
             Some(Message::RenderCompleted(mut renderer)) => {

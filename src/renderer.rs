@@ -1,8 +1,7 @@
 use image::Rgb;
-use nalgebra::{vector, Vector3};
 use rand::Rng;
 use rayon::prelude::*;
-use std::{ops::Div, time::Duration};
+use std::time::Duration;
 
 use crate::{
     ray,
@@ -12,7 +11,7 @@ use crate::{
 
 #[derive(Debug, Clone)]
 pub struct Renderer {
-    accumulated_buffer: Vec<Vector3<u64>>,
+    accumulated_buffer: Vec<u64>,
     output_buffer: Vec<u8>,
     accumulated_samples: usize,
     camera: Camera,
@@ -22,7 +21,7 @@ pub struct Renderer {
 
 impl Renderer {
     pub fn new(camera: Camera, scene: Scene, image: Image) -> Self {
-        let accumulated_buffer = vec![vector![0, 0, 0]; (image.height * image.width) as usize];
+        let accumulated_buffer = vec![0u64; (3 * image.height * image.width) as usize];
         let output_buffer = vec![0u8; (3 * image.height * image.width) as usize];
         let accumulated_samples = 0;
 
@@ -48,8 +47,9 @@ impl Renderer {
         self.accumulated_samples += 1;
         self.accumulated_buffer
             .par_iter_mut()
+            .chunks(3)
             .enumerate()
-            .for_each(|(i, pixel)| {
+            .for_each(|(i, mut pixel)| {
                 let mut rng = rand::thread_rng();
                 let x = i as u64 % self.image.width;
                 let y = i as u64 / self.image.width;
@@ -59,7 +59,9 @@ impl Renderer {
 
                 let ray = self.camera.get_ray(u, v);
                 let pixel_colour = self.scene.ray_colour(&ray, self.image.max_depth);
-                *pixel += ray::vec_to_vec3(pixel_colour, 1)
+                *pixel[0] += ray::vec_to_vec3(pixel_colour, 1).x();
+                *pixel[1] += ray::vec_to_vec3(pixel_colour, 1).y();
+                *pixel[2] += ray::vec_to_vec3(pixel_colour, 1).z();
             });
         start.elapsed()
     }
@@ -94,15 +96,19 @@ impl Renderer {
         self.output_buffer
             .par_iter_mut()
             .chunks(3)
-            .zip(self.accumulated_buffer.par_iter())
+            .zip(self.accumulated_buffer.par_iter().chunks(3))
             .for_each(|(mut pixel, acc)| {
-                let mut scaled = acc.cast::<f64>().div(self.accumulated_samples as f64);
-                scaled.apply(|v| {
+                let mut scaled = vec![0.0; 3];
+                scaled[0] = *acc[0] as f64 / (self.accumulated_samples as f64);
+                scaled[1] = *acc[1] as f64 / (self.accumulated_samples as f64);
+                scaled[2] = *acc[2] as f64 / (self.accumulated_samples as f64);
+
+                for v in &mut scaled {
                     utility::clamp(255.0 * v.sqrt(), 0.0, 255.0);
-                });
-                *pixel[0] = scaled.x() as u8;
-                *pixel[1] = scaled.y() as u8;
-                *pixel[2] = scaled.z() as u8;
+                }
+                *pixel[0] = scaled[0] as u8;
+                *pixel[1] = scaled[1] as u8;
+                *pixel[2] = scaled[2] as u8;
             });
     }
 

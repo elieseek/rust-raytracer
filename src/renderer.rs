@@ -81,8 +81,8 @@ impl Renderer {
                 let pixel_colour = self.scene.ray_colour(&ray, self.image.max_depth);
 
                 let r = pixel_colour.x();
-                let g = pixel_colour.x();
-                let b = pixel_colour.x();
+                let g = pixel_colour.y();
+                let b = pixel_colour.z();
 
                 *pixel[0] = (256.0 * clamp(r.sqrt(), 0.0, 0.999)) as u8;
                 *pixel[1] = (256.0 * clamp(g.sqrt(), 0.0, 0.999)) as u8;

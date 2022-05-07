@@ -137,34 +137,34 @@ fn main() {
     });
 
     while app.wait() {
-        match r.recv() {
-            Some(Message::Rendered(render_sample)) => {
-                let buffer = render_sample.render;
-                let sample = render_sample.sample;
-                let flipped_buffer = image::imageops::flip_vertical(&buffer);
-                let mut image = fltk::image::RgbImage::new(
-                    &flipped_buffer,
-                    image_width,
-                    image_height,
-                    enums::ColorDepth::Rgb8,
-                )
-                .unwrap();
-                progress_bar.set_value(sample);
-                progress_bar.set_label(&format!("Sample: {}", sample));
-                image_frame.draw(move |f| {
-                    image.scale(f.width(), f.height(), false, true);
-                    image.draw(f.x(), f.y(), f.w(), f.height());
-                });
-                image_frame.redraw();
-            }
+        if let Some(msg) = r.recv() {
+            match msg {
+                Message::Rendered(render_sample) => {
+                    let buffer = render_sample.render;
+                    let sample = render_sample.sample;
+                    let flipped_buffer = image::imageops::flip_vertical(&buffer);
+                    let mut image = fltk::image::RgbImage::new(
+                        &flipped_buffer,
+                        image_width,
+                        image_height,
+                        enums::ColorDepth::Rgb8,
+                    )
+                    .unwrap();
+                    progress_bar.set_value(sample);
+                    progress_bar.set_label(&format!("Sample: {}", sample));
+                    image_frame.draw(move |f| {
+                        image.scale(f.width(), f.height(), false, true);
+                        image.draw(f.x(), f.y(), f.w(), f.height());
+                    });
+                    image_frame.redraw();
+                }
 
-            Some(Message::RenderCompleted(mut renderer)) => {
-                progress_bar.set_label("Done!");
-                save_button.activate();
-                save_button.set_callback(move |_ev| renderer.save_image("output/image.png"));
+                Message::RenderCompleted(mut renderer) => {
+                    progress_bar.set_label("Done!");
+                    save_button.activate();
+                    save_button.set_callback(move |_ev| renderer.save_image("output/image.png"));
+                }
             }
-
-            None => {}
         }
     }
 }

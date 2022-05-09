@@ -129,9 +129,11 @@ fn main() {
     std::thread::spawn(move || {
         for sample in 0..samples {
             renderer.render();
-            renderer.set_output_buffer();
-            let buffer = renderer.get_image_buffer().unwrap();
-            s.send(Message::Rendered(RenderSample::new(buffer, sample as f64)));
+            if sample % 5 == 0 { 
+                renderer.set_output_buffer();
+                let buffer = renderer.get_image_buffer().unwrap();
+                s.send(Message::Rendered(RenderSample::new(buffer, sample as f64)));
+            }
         }
         s.send(Message::RenderCompleted(Box::new(renderer.clone())));
     });
